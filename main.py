@@ -59,10 +59,21 @@ def home():
           <p><button type="submit">Upload & Index</button></p>
         </form>
         <hr/>
-        <h2>2) Ask the RAG Chat</h2>
-        <form method="post" action="/chat/ask">
+        <h2>2) Ask the RAG Chat (with optional file uploads)</h2>
+        <form method="post" action="/chat/ask" enctype="multipart/form-data">
           <p><textarea name="q" rows="4" cols="80" placeholder="Ask a question..." required></textarea></p>
           <p><label>Top K: <input type="number" name="k" value="5" min="1" max="20"></label></p>
+          <p>
+            <label>Adjuntar archivos (opcional):
+              <input type="file" name="files" multiple accept=".xlsx,.xls,.csv,.txt,.md" />
+            </label>
+          </p>
+          <p>
+            <label>
+              <input type="checkbox" name="persist_uploads" value="true" />
+              Persistir archivos subidos en Chroma (si no, se usan solo como contexto efímero)
+            </label>
+          </p>
           <p><button type="submit">Ask</button></p>
         </form>
         <hr/>
