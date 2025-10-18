@@ -22,7 +22,7 @@ services:
               capabilities: [gpu]
 
   chromadb:
-    image: chromadb/chroma:latest
+    image: chromadb/chroma:0.5.5
     container_name: chromadb
     ports:
       - "8100:8000"
