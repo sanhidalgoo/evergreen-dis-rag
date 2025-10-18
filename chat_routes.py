@@ -24,7 +24,6 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
         return dataframe_to_text(df, Path(filename).stem)
 
     def csv_to_text(file_bytes: bytes, filename: str) -> str:
-        # Intento con UTF-8 y fallback a Latin-1; pandas deduce separador si es posible
         try:
             df = pd.read_csv(BytesIO(file_bytes))
         except UnicodeDecodeError:
@@ -37,119 +36,18 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
         except Exception:
             return ""
 
-    def answer_with_ollama(contexts: List[str], question: str) -> str:
+    def answer_with_ollama(model_name: str, contexts: List[str], question: str) -> str:
         try:
             url = f"{ollama_base}/api/chat"
-            # sys = (
-            #     "Eres un asistente muy útil para mapear pedidos a camiones. Responde solo utilizando el contexto proporcionado"
-            #     "Serás experto generando la lista de pedidos que tendrá cada camión"
-            # )
-            sys = """# Sistema de Asignación de Despacho de Pedidos
-
-            Eres un asistente experto en logística y optimización de rutas, especializado en la generación de archivos de despacho de pedidos. Tienes acceso a una base de conocimiento que contiene información sobre SLAs, políticas de entrega, restricciones de productos y reglas de negocio.
-
-            La información de camiones disponibles y pedidos pendientes está disponible en los archivos cargados en el sistema. La fecha de despacho es HOY.
-
-            ---
-
-            ## INSTRUCCIONES DE ASIGNACIÓN:
-
-            Genera una asignación óptima de pedidos a camiones siguiendo estos criterios en orden de prioridad:
-
-            ### 1. CUMPLIMIENTO DE SLA (Prioridad Crítica)
-            - Consulta los SLA de cada plan de cliente en la base de conocimiento
-            - Los pedidos con SLA más restrictivo tienen prioridad absoluta
-            - Identifica pedidos en riesgo de incumplimiento y márcalos
-
-            ### 2. RESTRICCIONES DE CARROCERÍA (Obligatorio)
-            - *Refrigerado*: Solo puede ir en camiones con carrocería refrigerada
-            - *Seco*: Puede ir en carrocería seca o mixta
-            - *Mixto*: Puede combinar productos si el camión lo permite
-            - NUNCA asignes un pedido a un camión incompatible
-
-            ### 3. CAPACIDAD FÍSICA (Obligatorio)
-            - Verifica que el peso total asignado ≤ capacidad de peso del camión
-            - Verifica que el volumen total asignado ≤ capacidad volumétrica del camión
-            - Calcula el % de utilización de cada camión
-
-            ### 4. OPTIMIZACIÓN DE RUTAS
-            - Agrupa pedidos con destinos cercanos en el mismo camión
-            - Prioriza rutas que maximicen la eficiencia del viaje
-            - Considera la secuencia lógica de entrega
-
-            ---
-
-            ## FORMATO DE SALIDA REQUERIDO:
-
-            Genera la asignación en el siguiente formato estructurado:
-
-            DESPACHO - [FECHA DE HOY]
-            =====================================
-
-            CAMIÓN: [ID_CAMION] - [PLACA]
-            Tipo Carrocería: [TIPO]
-            Capacidad: [PESO_MAX]kg / [VOLUMEN_MAX]m³
-
-            Pedidos Asignados:
-            1. Pedido #[ID] - Cliente: [NOMBRE] (Plan: [PLAN])
-            - Destino: [CIUDAD/ZONA]
-            - Peso: [X]kg | Volumen: [Y]m³
-            - Tipo: [REFRIGERADO/SECO/MIXTO]
-            - SLA: [DÍAS] días
-
-            2. [...]
-
-            Totales:
-            - Peso Total: [X]kg ([%]% de capacidad)
-            - Volumen Total: [Y]m³ ([%]% de capacidad)
-            - Pedidos: [N]
-            - Ruta Sugerida: [DESCRIPCIÓN]
-
-            Notas: [ALERTAS O CONSIDERACIONES ESPECIALES]
-
-            -------------------------------------
-
-            [REPETIR PARA CADA CAMIÓN]
-
-            =====================================
-
-            RESUMEN GENERAL:
-            - Total Camiones Utilizados: [N]
-            - Total Pedidos Asignados: [N]
-            - Pedidos No Asignados: [N] (listar con razón)
-            - Utilización Promedio Flota: [%]%
-
-            ALERTAS CRÍTICAS:
-            [Lista de pedidos en riesgo de SLA o advertencias importantes]
-
-
-            ---
-
-            ## VALIDACIONES OBLIGATORIAS:
-
-            Antes de generar la salida, verifica:
-            - ✓ Ningún pedido excede capacidad del camión asignado
-            - ✓ Todos los pedidos cumplen restricción de carrocería
-            - ✓ Pedidos urgentes están asignados prioritariamente
-            - ✓ No hay conflictos de incompatibilidad (ej: productos que no pueden ir juntos)
-
-            ## REGLAS ADICIONALES:
-
-            - Si un pedido NO puede ser asignado, explica claramente el motivo
-            - Si hay conflicto entre criterios, prioriza: SLA > Carrocería > Capacidad > Optimización
-            - Sugiere acciones cuando la capacidad disponible es insuficiente
-            - Marca con ⚠️ cualquier asignación que esté al límite de capacidad (>95%)
-            - Consulta la base de conocimiento para cualquier regla específica de cliente o producto
-            - Si la información es insuficiente o no está disponible en la base de conocimiento, indícalo claramente
-            ---
-
-            ## RESPUESTA:
-            """
+            sys = (
+                "You are a helpful assistant. Answer only using the provided context. "
+                "If the context is insufficient, say you don't know."
+            )
             user = f"Context:\n{'\\n\\n---\\n\\n'.join(contexts)}\n\nQuestion: {question}\nAnswer:"
             r = requests.post(
                 url,
                 json={
-                    "model": ollama_model,
+                    "model": model_name,
                     "messages": [
                         {"role": "system", "content": sys},
                         {"role": "user", "content": user},
@@ -161,7 +59,7 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
             )
             r.raise_for_status()
             return (r.json().get("message") or {}).get("content", "").strip()
-        except Exception:
+        except Exception as e:
             return "(No LLM available) Top matches:\n\n" + "\n\n---\n\n".join(contexts)
 
     # ---------- Endpoint principal ----------
@@ -171,6 +69,7 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
         k: int = Form(5),
         files: Optional[List[UploadFile]] = File(None),
         persist_uploads: Optional[str] = Form(None),  # "true" si el checkbox viene marcado
+        model: Optional[str] = Form(None),            # <-- nuevo: modelo elegido en la UI
     ):
         # 1) Recuperación con la colección existente
         qvec = embedder.encode([q])[0].tolist()
@@ -198,14 +97,11 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
                     elif name.endswith(".txt") or name.endswith(".md"):
                         text = text_like_to_text(file_bytes)
                     else:
-                        # Tipo no soportado: lo ignoramos con una marca
                         uploaded_texts.append(f"(Ignorado {f.filename}: tipo no soportado)")
                         continue
 
-                    # Añadimos el texto a contexto efímero
                     uploaded_texts.append(f"(Subido) {f.filename}:\n{text}")
 
-                    # Si se pidió persistir, lo indexamos en Chroma
                     if persist_uploads == "true":
                         vec = embedder.encode([text])[0].tolist()
                         doc_id = f"chatdoc_{uuid.uuid4()}"
@@ -220,9 +116,8 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
                 except Exception as e:
                     uploaded_texts.append(f"(Error leyendo {f.filename}: {e})")
 
-        # 3) Construir el contexto final (archivos subidos primero, luego los chunks de la colección)
+        # 3) Contextos finales (uploads + recuperados)
         contexts = uploaded_texts + docs
-
         if not contexts:
             return HTMLResponse(
                 "<p><b>No matches found</b>. "
@@ -230,10 +125,13 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
                 "<p><a href='/'>Back</a></p>"
             )
 
-        # 4) LLM (o fallback)
-        answer = answer_with_ollama(contexts, q)
+        # 4) Selección del modelo
+        model_to_use = (model or "").strip() or ollama_model  # si no llega, fallback al default
 
-        # 5) Render de respuesta + fuentes
+        # 5) LLM (o fallback)
+        answer = answer_with_ollama(model_to_use, contexts, q)
+
+        # 6) Render de respuesta + fuentes
         def li_block(title: str, body: str) -> str:
             return (
                 "<li><details><summary>"
@@ -262,7 +160,7 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
         )
 
         html = f"""
-        <h3>Answer</h3>
+        <h3>Answer (model: {model_to_use})</h3>
         <div style="white-space:pre-wrap;border:1px solid #ddd;padding:10px;border-radius:8px;">{answer}</div>
         {persist_note}
         <h4>Contexto de esta respuesta</h4>

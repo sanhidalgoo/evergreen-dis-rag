@@ -4,6 +4,7 @@ from chromadb.config import Settings as ChromaSettings
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from sentence_transformers import SentenceTransformer
+import requests
 import uvicorn
 
 from ingest_routes import get_ingest_router
@@ -30,7 +31,6 @@ def _strip_scheme(host: str) -> str:
 # =========================
 # Chroma client (simple)
 # =========================
-# NOTA: No pasamos tenant/database; usamos un cliente simple compatible
 chroma_client = chromadb.HttpClient(
     host=_strip_scheme(CHROMA_HOST),
     port=CHROMA_PORT,
@@ -42,12 +42,48 @@ collection = chroma_client.get_or_create_collection(CHROMA_COLLECTION)
 embedder = SentenceTransformer(EMBED_MODEL_NAME)
 
 # =========================
+# Helpers Ollama
+# =========================
+def get_ollama_models(base_url: str) -> list[str]:
+    """
+    Devuelve lista de nombres de modelos registrados en Ollama (p.ej. ['mistral:latest', 'llama3:8b']).
+    Si falla, devuelve lista vacía.
+    """
+    try:
+        resp = requests.get(f"{base_url}/api/tags", timeout=5)
+        resp.raise_for_status()
+        data = resp.json() or {}
+        models = data.get("models", []) or []
+        out = []
+        for m in models:
+            # Preferimos 'name' si existe; si no, intentamos 'model'
+            name = m.get("name") or m.get("model")
+            if isinstance(name, str):
+                out.append(name)
+        # Orden alfabético para UX
+        out = sorted(set(out))
+        return out
+    except Exception:
+        return []
+
+# =========================
 # FastAPI app
 # =========================
 app = FastAPI(title="Chroma Ingest + RAG Chat (v2)")
 
 @app.get("/", response_class=HTMLResponse)
 def home():
+    # Obtenemos modelos de Ollama para el <select>
+    models = get_ollama_models(OLLAMA_BASE)
+    # Construimos las <option> (si no hay, mostraremos un input manual)
+    options_html = ""
+    if models:
+        # Marcamos como selected el valor por defecto si aparece
+        for m in models:
+            selected = " selected" if m.startswith(OLLAMA_CHAT_MODEL) else ""
+            options_html += f'<option value="{m}"{selected}>{m}</option>'
+
+    # Render page
     return HTMLResponse(
         f"""
         <h1>Chroma Ingest + RAG Chat</h1>
@@ -64,6 +100,16 @@ def home():
           <p><textarea name="q" rows="4" cols="80" placeholder="Ask a question..." required></textarea></p>
           <p><label>Top K: <input type="number" name="k" value="5" min="1" max="20"></label></p>
           <p>
+            <label>Modelo (Ollama):</label><br/>
+            {"<select name='model'>" + options_html + "</select>" if models else
+            f"<input type='text' name='model' placeholder='e.g. {OLLAMA_CHAT_MODEL}' value='{OLLAMA_CHAT_MODEL}' />"
+            }
+            <br/><small style="color:#666">{
+                "Selecciona un modelo disponible en tu Ollama." if models
+                else "No pude listar modelos de Ollama; ingresa el nombre manualmente (p. ej. 'mistral' o 'mistral:latest')."
+            }</small>
+          </p>
+          <p>
             <label>Adjuntar archivos (opcional):
               <input type="file" name="files" multiple accept=".xlsx,.xls,.csv,.txt,.md" />
             </label>
@@ -77,7 +123,7 @@ def home():
           <p><button type="submit">Ask</button></p>
         </form>
         <hr/>
-        <p style="color:#666">Embed model: <code>{EMBED_MODEL_NAME}</code> • Ollama: <code>{OLLAMA_CHAT_MODEL}</code> at <code>{OLLAMA_BASE}</code></p>
+        <p style="color:#666">Embed model: <code>{EMBED_MODEL_NAME}</code> • Ollama base: <code>{OLLAMA_BASE}</code> • Default model: <code>{OLLAMA_CHAT_MODEL}</code></p>
         """
     )
 
