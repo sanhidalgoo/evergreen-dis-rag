@@ -8,6 +8,9 @@ import requests
 from fastapi import APIRouter, Form, File, UploadFile
 from fastapi.responses import HTMLResponse
 
+from datetime import datetime
+
+
 def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
     router = APIRouter()
 
@@ -39,6 +42,9 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
     def answer_with_ollama(model_name: str, contexts: List[str], question: str) -> str:
         try:
             url = f"{ollama_base}/api/chat"
+            
+            today = datetime.now().strftime("%Y-%m-%d")
+
             sys = """# Sistema de Asignación de Despacho de Pedidos
 
                 Eres un asistente experto en logística y optimización de rutas, especializado en la generación de archivos de despacho de pedidos. Tienes acceso a una base de conocimiento que contiene información sobre SLAs, políticas de entrega, restricciones de productos y reglas de negocio.
@@ -78,8 +84,8 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
 
                 Genera la asignación en formato JSON siguiendo EXACTAMENTE esta estructura:
 
-                {
-                "fecha_plan": "YYYY-MM-DD", # Usa la fecha del día de hoy
+                {{
+                "fecha_plan": "{today}",
                 "asignaciones": [
                     {
                     "codigo_camion": "CODIGO_CAMION",
@@ -93,7 +99,7 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
                     "descripcion": "Descripción detallada de la alerta o restricción identificada."
                     }
                 ]
-                }
+                }}
 
                 ### Tipos de alertas válidos:
                 - "sobrecarga": Cuando un pedido excede la capacidad disponible
@@ -111,6 +117,7 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
                 - Todos los pedidos cumplen restricción de carrocería
                 - Pedidos urgentes están asignados prioritariamente
                 - No hay conflictos de incompatibilidad
+                - **La fecha_plan en el JSON debe ser exactamente: {today}**                
 
                 ## REGLAS ADICIONALES:
 
