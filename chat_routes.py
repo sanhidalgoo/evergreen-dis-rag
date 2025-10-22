@@ -1,3 +1,4 @@
+from datetime import datetime
 import uuid
 from io import BytesIO
 from pathlib import Path
@@ -7,6 +8,7 @@ import pandas as pd
 import requests
 from fastapi import APIRouter, Form, File, UploadFile
 from fastapi.responses import HTMLResponse
+
 
 def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
     router = APIRouter()
@@ -76,10 +78,11 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
 
                 ## FORMATO DE SALIDA REQUERIDO:
 
-                Genera la asignación en formato JSON siguiendo EXACTAMENTE esta estructura:
+                Genera la asignación en formato JSON siguiendo EXACTAMENTE esta estructura: ten en cuenta de usar el dato fecha_despacho proporcionado
+                en la llave "fecha_plan":
 
                 {
-                "fecha_plan": "YYYY-MM-DD", # Usa la fecha del día de hoy
+                "fecha_plan": "YYYY-MM-DD",
                 "asignaciones": [
                     {
                     "codigo_camion": "CODIGO_CAMION",
@@ -127,7 +130,8 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
 
                 Genera ÚNICAMENTE el JSON sin texto adicional antes o después.
             """
-            user = f"Context:\n{'\\n\\n---\\n\\n'.join(contexts)}\n\nQuestion: {question}\nAnswer:"
+            fecha_despacho = datetime.now().strftime("%Y-%m-%d")
+            user = f"Context:\n{'\\n\\n---\\n\\n'.join(contexts)}\n\nQuestion: {question}\n\nfecha_despacho: {fecha_despacho}\nAnswer:"
             r = requests.post(
                 url,
                 json={
@@ -152,8 +156,10 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
         q: str = Form(...),
         k: int = Form(5),
         files: Optional[List[UploadFile]] = File(None),
-        persist_uploads: Optional[str] = Form(None),  # "true" si el checkbox viene marcado
-        model: Optional[str] = Form(None),            # <-- nuevo: modelo elegido en la UI
+        persist_uploads: Optional[str] = Form(
+            None
+        ),  # "true" si el checkbox viene marcado
+        model: Optional[str] = Form(None),  # <-- nuevo: modelo elegido en la UI
     ):
         # 1) Recuperación con la colección existente
         qvec = embedder.encode([q])[0].tolist()
@@ -181,7 +187,9 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
                     elif name.endswith(".txt") or name.endswith(".md"):
                         text = text_like_to_text(file_bytes)
                     else:
-                        uploaded_texts.append(f"(Ignorado {f.filename}: tipo no soportado)")
+                        uploaded_texts.append(
+                            f"(Ignorado {f.filename}: tipo no soportado)"
+                        )
                         continue
 
                     uploaded_texts.append(f"(Subido) {f.filename}:\n{text}")
@@ -210,7 +218,9 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
             )
 
         # 4) Selección del modelo
-        model_to_use = (model or "").strip() or ollama_model  # si no llega, fallback al default
+        model_to_use = (
+            model or ""
+        ).strip() or ollama_model  # si no llega, fallback al default
 
         # 5) LLM (o fallback)
         answer = answer_with_ollama(model_to_use, contexts, q)
@@ -226,13 +236,10 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
             )
 
         uploaded_list = "".join(
-            [li_block(f"(Upload) {i+1}", txt) for i, txt in enumerate(uploaded_texts)]
+            [li_block(f"(Upload) {i + 1}", txt) for i, txt in enumerate(uploaded_texts)]
         )
         retr_list = "".join(
-            [
-                li_block(f"(DB) Chunk {i+1}", docs[i])
-                for i in range(len(docs))
-            ]
+            [li_block(f"(DB) Chunk {i + 1}", docs[i]) for i in range(len(docs))]
         )
 
         persist_note = (
