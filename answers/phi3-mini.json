@@ -1,0 +1,35 @@
+{
+    "fecha_plan": "2025-10-21",
+    "asignaciones": [
+        {
+            "codigo_camion": "CAM-004",
+            "pedido_id": "P002",
+            "justificacion": "El pedido P002 requiere refrigeración y su volumen estimado de 4.2 m3 se puede acomodar dentro del camión CAM-004, que tiene capacidad para este peso (840 KG) sin exceder la capacidad máxima."
+        },
+        {
+            "codigo_camion": "CAM-001",
+            "pedido_id": "P006",
+            "justificacion": "El pedido P006 es urgente (Plan cliente: basic) y se puede asignar al camión CAM-001, que cumple con la restricción de mixto carrocería."
+        },
+        {
+            "codigo_camion": "CAM-003",
+            "pedido_id": "P007",
+            "justificacion": "El pedido P007 se puede asignar al camión CAM-003, que cumple con la restricción de mixto carrocería."
+        },
+        {
+            "codigo_camion": "CAM-002",
+            "pedido_id": "P009",
+            "justificacion": "El pedido P009 requiere un camión con capacidad seca y el volumen estimado de 1.9 m3 puede ser acomodado dentro del camión CAM-002, que tiene la capacidad para este peso (350 KG)."
+        }
+    ],
+    "alertas": [
+        {
+            "tipo_alerta": "sobrecarga",
+            "descripcion": "El pedido P002 está sobrecargando al camión CAM-004, ya que su peso total asignado es de 840 KG y la capacidad máxima del camión no ha sido superada."
+        },
+        {
+            "tipo_alerta": "riesgo_sla",
+            "descripcion": "El pedido P005 está en riesgo de incumplir su SLA, ya que requiere refrigeración y se ha asignado al camión CAM-004, que no cumple con esta restricción."
+        }
+    ]
+}

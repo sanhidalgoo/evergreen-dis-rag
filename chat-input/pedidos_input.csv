@@ -1,0 +1,11 @@
+ID Pedido,Cliente,Plan cliente,Volumen estimado (m3),Peso (KG),Direccion destino (incluye ciudad y municipio),Restricciones (refrigerado etc.)
+P001,Agroverde S.A.,pro,1.8,320,Calle 123 #45-67 - Bogota (Cundinamarca),seco
+P002,FreshField Ltd.,plus,4.2,840,Carrera 10 #20-30 - Medellin (Antioquia),refrigerado
+P003,CampoFertil SAS,basic,2.5,450,Km 4 via Palmira - Cali (Valle del Cauca),mixto
+P004,GreenHarvest Ltd.,pro,2.1,380,Avenida 5 #18-22 - Bucaramanga (Santander),seco
+P005,Frutalia S.A.S.,plus,5,950,Carrera 45 #80-15 - Barranquilla (Atlantico),refrigerado
+P006,AgroNorte S.A.,basic,1.2,220,Vereda El Rosal - Tunja (Boyaca),mixto
+P007,BioCampo Ltda.,pro,3.5,630,Calle 56 #12-90 - Pereira (Risaralda),seco
+P008,Verdemax SAS,plus,5.5,1050,Carrera 9 #15-48 - Ibague (Tolima),refrigerado
+P009,EcoFarms Co.,basic,1.9,350,Carrera 45 #25-60 - Neiva (Huila),seco
+P010,NutriAgro S.A.,plus,4,720,Avenida Las Palmas - Medellin,seco

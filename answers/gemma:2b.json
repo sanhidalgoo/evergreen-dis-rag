@@ -1,0 +1,61 @@
+{
+  "fecha_plan": "2025-10-21",
+  "asignaciones": [
+    {
+      "codigo_camion": "CAM-001",
+      "pedido_id": "P001",
+      "justificacion": "El pedido con ID 'P001' cumple la restricción de tipo 'refrigerado' y se asignó a un camión con código 'CAM-001'."
+    },
+    {
+      "codigo_camion": "CAM-002",
+      "pedido_id": "P002",
+      "justificacion": "El pedido con ID 'P002' cumple la restricción de tipo 'refrigerado' y se asignó a un camión con código 'CAM-002'."
+    },
+    {
+      "codigo_camion": "CAM-003",
+      "pedido_id": "P003",
+      "justificacion": "El pedido con ID 'P003' cumple la restricción de tipo 'mixto' y se asignó a un camión con código 'CAM-003'."
+    },
+    {
+      "codigo_camion": "CAM-004",
+      "pedido_id": "P004",
+      "justificacion": "El pedido con ID 'P004' cumple la restricción de tipo 'refrigerado' y se asignó a un camión con código 'CAM-004'."
+    },
+    {
+      "codigo_camion": "CAM-005",
+      "pedido_id": "P005",
+      "justificacion": "El pedido con ID 'P005' cumple la restricción de tipo 'refrigerado' y se asignó a un camión con código 'CAM-005'."
+    },
+    {
+      "codigo_camion": "CAM-006",
+      "pedido_id": "P006",
+      "justificacion": "El pedido con ID 'P006' cumple la restricción de tipo 'mixto' y se asignó a un camión con código 'CAM-006'."
+    },
+    {
+      "codigo_camion": "CAM-007",
+      "pedido_id": "P007",
+      "justificacion": "El pedido con ID 'P007' cumple la restricción de tipo 'refrigerado' y se asignó a un camión con código 'CAM-007'."
+    },
+    {
+      "codigo_camion": "CAM-008",
+      "pedido_id": "P008",
+      "justificacion": "El pedido con ID 'P008' cumple la restricción de tipo 'refrigerado' y se asignó a un camión con código 'CAM-008'."
+    },
+    {
+      "codigo_camion": "CAM-009",
+      "pedido_id": "P009",
+      "justificacion": "El pedido con ID 'P009' cumple la restricción de tipo 'mixto' y se asignó a un camión con código 'CAM-009'."
+    },
+    {
+      "codigo_camion": "CAM-010",
+      "pedido_id": "P010",
+      "justificacion": "El pedido con ID 'P010' cumple la restricción de tipo 'refrigerado' y se asignó a un camión con código 'CAM-010'."
+    }
+  ],
+  "alertas": [
+    {
+      "tipo_alerta": "SOBRECARGA",
+      "descripcion": "El pedido con ID 'P001' supera la capacidad del camión con código 'CAM-001'. Se recomienda asignarlo a un camión con mayor capacidad."
+    }
+  ]
+}
