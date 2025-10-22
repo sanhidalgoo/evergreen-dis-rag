@@ -79,7 +79,7 @@ def get_chat_router(collection, embedder, ollama_base: str, ollama_model: str):
                 Genera la asignación en formato JSON siguiendo EXACTAMENTE esta estructura:
 
                 {
-                "fecha_plan": "YYYY-MM-DD",
+                "fecha_plan": "YYYY-MM-DD", # Usa la fecha del día de hoy
                 "asignaciones": [
                     {
                     "codigo_camion": "CODIGO_CAMION",
