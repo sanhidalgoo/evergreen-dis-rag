@@ -1,0 +1,45 @@
+{
+    "fecha_plan": "2025-10-21",
+    "asignaciones": [
+        {
+            "codigo_camion": "CAM-004",
+            "pedido_id": "P002",
+            "justificacion": "El pedido P002 requiere un camión refrigerado para cumplir con las restricciones de carrocería. El CAM-004 cumple esta condición y no excede la capacidad del camión."
+        },
+        {
+            "codigo_camion": "CAM-001",
+            "pedido_id": "P003",
+            "justificacion": "El pedido P003 requiere un camión mixto. El CAM-001 cumple con esta condición y no excede la capacidad del camión."
+        },
+        {
+            "codigo_camion": "CAM-002",
+            "pedido_id": "P005",
+            "justificacion": "El pedido P005 requiere un camión refrigerado para cumplir con las restricciones de carrocería. El CAM-002 cumple esta condición y no excede la capacidad del camión."
+        },
+        {
+            "codigo_camion": "CAM-003",
+            "pedido_id": "P006 P009",
+            "justificacion": "El pedido P006 y P009 requieren un camión mixto. El CAM-003 cumple con esta condición y no excede la capacidad del camión."
+        },
+        {
+            "codigo_camion": "CAM-001",
+            "pedido_id": "P004 P007",
+            "justificacion": "Los pedidos P004 y P007 requieren un camión seco. El CAM-001 cumple con esta condición y no excede la capacidad del camión."
+        },
+        {
+            "codigo_camion": "CAM-002",
+            "pedido_id": "P008 P010",
+            "justificacion": "Los pedidos P008 y P010 requieren un camión refrigerado. El CAM-002 cumple con esta condición y no excede la capacidad del camión."
+        }
+    ],
+    "alertas": [
+        {
+            "tipo_alerta": "capacidad_limite",
+            "descripcion": "El camión CAM-001 está al 97.5% de su capacidad después de asignar los pedidos P004 y P007."
+        },
+        {
+            "tipo_alerta": "capacidad_limite",
+            "descripcion": "El camión CAM-002 está al 96.3% de su capacidad después de asignar los pedidos P008 y P010."
+        }
+    ]
+}

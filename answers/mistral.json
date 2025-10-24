@@ -1,0 +1,61 @@
+{
+"fecha_plan": "2025-10-21",
+"asignaciones": [
+    {
+    "codigo_camion": "CAM-002",
+    "pedido_id": "P002",
+    "justificacion": "El pedido P002 del cliente FreshField Ltd. fue asignado al camión CAM-002 debido a que es de tipo refrigerado y la dirección destino está en Medellin, lo cual permite una eficiencia de ruta alta. El SLA del plan de cliente pro es menos restrictivo que el de otros pedidos."
+    },
+    {
+    "codigo_camion": "CAM-004",
+    "pedido_id": "P008",
+    "justificacion": "El pedido P008 del cliente Verdemax SAS fue asignado al camión CAM-004 debido a que es de tipo refrigerado y la dirección destino está en Ibague, lo cual permite una eficiencia de ruta alta. El SLA del plan de cliente plus es menos restrictivo que el de otros pedidos."
+    },
+    {
+    "codigo_camion": "CAM-003",
+    "pedido_id": "P004",
+    "justificacion": "El pedido P004 del cliente GreenHarvest Ltd. fue asignado a la furgoneta CAM-003 debido a que es de tipo seco y la dirección destino está en Bucaramanga, lo cual permite una eficiencia de ruta alta."
+    },
+    {
+    "codigo_camion": "CAM-001",
+    "pedido_id": "P003",
+    "justificacion": "El pedido P003 del cliente CampoFertil SAS fue asignado al camión furgón 100 CAM-001 debido a que es de tipo mixto y la dirección destino está en Cali, lo cual permite una eficiencia de ruta alta. El SLA del plan de cliente basic es menos restrictivo que el de otros pedidos."
+    },
+    {
+    "codigo_camion": "CAM-001",
+    "pedido_id": "P005",
+    "justificacion": "El pedido P005 del cliente Frutalia S.A.S. fue asignado al camión furgón 100 CAM-001 debido a que es de tipo refrigerado y la dirección destino está en Barranquilla, lo cual permite una eficiencia de ruta alta. El SLA del plan de cliente plus es menos restrictivo que el de otros pedidos."
+    },
+    {
+    "codigo_camion": "CAM-003",
+    "pedido_id": "P006",
+    "justificacion": "El pedido P006 del cliente AgroNorte S.A. fue asignado a la furgoneta CAM-003 debido a que es de tipo mixto y la dirección destino está en Tunja, lo cual permite una eficiencia de ruta alta."
+    },
+    {
+    "codigo_camion": "CAM-001",
+    "pedido_id": "P007",
+    "justificacion": "El pedido P007 del cliente BioCampo Ltda. fue asignado al camión furgón 100 CAM-001 debido a que es de tipo seco y la dirección destino está en Pereira, lo cual permite una eficiencia de ruta alta."
+    },
+    {
+    "codigo_camion": "CAM-003",
+    "pedido_id": "P010",
+    "justificacion": "El pedido P010 del cliente NutriAgro S.A. fue asignado a la furgoneta CAM-003 debido a que es de tipo seco y la dirección destino está en Medellin."
+    },
+    {
+    "codigo_camion": "CAM-002",
+    "pedido_id": "P001",
+    "justificacion": "El pedido P001 del cliente Agroverde S.A. fue asignado al camión furgón 400 CAM-002 debido a que es de tipo seco y la dirección destino está en Bogota, lo cual permite una eficiencia de ruta alta."
+    },
+    {
+    "codigo_camion": "CAM-003",
+    "pedido_id": "P009",
+    "justificacion": "El pedido P009 del cliente EcoFarms Co. fue asignado a la furgoneta CAM-003 debido a que es de tipo seco y la dirección destino está en Neiva."
+    }
+],
+"alertas": [
+    {
+    "tipo_alerta": "capacidad_limite",
+    "descripcion": "El camión CAM-001 está al 98% de su capacidad, se recomienda verificar si es necesario agregar otro camión para la entrega."
+    }
+]
+}
